@@ -190,13 +190,12 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                   dataList.map((driver) => {
                     const isSuspended = driver.status === DriverStatus.SUSPENDED;
                     const isOnTrip = driver.status === DriverStatus.ON_TRIP;
-                    
+
                     return (
                       <tr
                         key={driver.id}
-                        className={`hover:bg-gray-50/30 transition-colors h-[52px] ${
-                          driver.flags.includes("LICENSE_EXPIRED") ? "bg-rose-50/10" : ""
-                        }`}
+                        className={`hover:bg-gray-50/30 transition-colors h-[52px] ${driver.flags.includes("LICENSE_EXPIRED") ? "bg-rose-50/10" : ""
+                          }`}
                       >
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
@@ -216,8 +215,8 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                               driver.flags.includes("LICENSE_EXPIRED")
                                 ? "text-rose-600 font-bold"
                                 : driver.flags.includes("LICENSE_EXPIRING_SOON")
-                                ? "text-amber-600 font-semibold"
-                                : "font-medium"
+                                  ? "text-amber-600 font-semibold"
+                                  : "font-medium"
                             }
                           >
                             {new Date(driver.licenseExpiryDate).toLocaleDateString()}

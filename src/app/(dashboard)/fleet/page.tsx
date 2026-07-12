@@ -23,10 +23,10 @@ export default async function VehiclesPage() {
       {/* Title section */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2.5 text-primary-500 font-bold text-xs uppercase tracking-wider">
+          {/* <div className="flex items-center gap-2.5 text-primary-500 font-bold text-xs uppercase tracking-wider">
             <Truck className="w-4 h-4" />
             Operations Workspace
-          </div>
+          </div> */}
           <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
             Vehicle Registry
           </h1>

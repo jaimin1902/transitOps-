@@ -44,49 +44,49 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl shadow-2xl relative overflow-hidden group">
+    <div className="w-full max-w-md p-8 bg-white border border-gray-200 rounded-3xl shadow-xl relative overflow-hidden group">
       {/* Decorative gradient overlay */}
-      <div className="absolute -top-40 -left-40 w-80 h-80 bg-indigo-600/30 rounded-full blur-3xl group-hover:bg-indigo-600/40 transition-colors duration-500"></div>
-      <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-violet-600/30 rounded-full blur-3xl group-hover:bg-violet-600/40 transition-colors duration-500"></div>
+      <div className="absolute -top-40 -left-40 w-80 h-80 bg-primary-50/20 rounded-full blur-3xl group-hover:bg-primary-50/40 transition-colors duration-500"></div>
+      <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-amber-50/20 rounded-full blur-3xl group-hover:bg-amber-50/40 transition-colors duration-500"></div>
 
       <div className="relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-2xl mb-4 shadow-inner">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl mb-4 shadow-inner">
             <Mail className="w-6 h-6 animate-pulse" />
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">Reset Password</h1>
-          <p className="text-slate-400 mt-2 text-sm font-medium">
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Reset Password</h1>
+          <p className="text-gray-500 mt-2 text-sm font-semibold">
             Enter your registered email to request a reset link
           </p>
         </div>
 
         {error && (
-          <div className="flex items-center gap-3 p-4 mb-6 bg-rose-500/10 border border-rose-500/20 text-rose-200 text-sm rounded-xl">
-            <AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
-            <p className="font-medium">{error}</p>
+          <div className="flex items-center gap-3 p-4 mb-6 bg-rose-50 border border-rose-250 text-rose-700 text-xs rounded-xl font-medium">
+            <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
+            <p className="font-semibold">{error}</p>
           </div>
         )}
 
         {successMessage ? (
           <div className="space-y-6">
-            <div className="flex items-start gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 text-sm rounded-xl">
-              <CheckCircle className="w-5 h-5 shrink-0 text-emerald-400 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl">
+              <CheckCircle className="w-5 h-5 shrink-0 text-emerald-600 mt-0.5" />
               <div className="space-y-2">
-                <p className="font-semibold">Reset request processed</p>
-                <p className="text-xs text-slate-300">
+                <p className="font-bold">Reset request processed</p>
+                <p className="text-xs text-gray-500">
                   We have simulated the password reset dispatch process. In production, this would send an email with the verification token link.
                 </p>
               </div>
             </div>
 
             {simulatedLink && (
-              <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2.5">
-                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-2.5 text-left">
+                <p className="text-[10px] font-bold text-primary-600 uppercase tracking-wider">
                   Simulated Reset Link (Local Developer Dev-Mode):
                 </p>
                 <a
                   href={simulatedLink}
-                  className="block text-xs font-mono break-all text-violet-400 hover:text-violet-300 underline font-semibold transition-colors"
+                  className="block text-xs font-mono break-all text-amber-600 hover:text-amber-700 underline font-bold transition-colors"
                 >
                   {simulatedLink}
                 </a>
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
 
             <Link
               href="/login"
-              className="w-full h-11 bg-slate-850 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl border border-slate-750 transition-all flex items-center justify-center gap-2"
+              className="w-full h-11 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold rounded-xl border border-gray-300 transition-all flex items-center justify-center gap-2 shadow-small"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Sign In
@@ -103,12 +103,12 @@ export default function ForgotPasswordPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
+            <div className="text-left">
+              <label className="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
                   <Mail className="w-5 h-5" />
                 </span>
                 <input
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="manager@transitops.com"
                   disabled={isLoading}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-xl focus:outline-none focus:border-primary-500 transition-all disabled:opacity-50"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+              className="w-full h-11 bg-primary-500 hover:bg-primary-600 text-white text-sm font-bold rounded-xl shadow-small hover:shadow-medium transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -137,7 +137,7 @@ export default function ForgotPasswordPage() {
 
             <Link
               href="/login"
-              className="w-full h-11 bg-transparent hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-semibold rounded-xl border border-transparent transition-all flex items-center justify-center gap-2"
+              className="w-full h-11 bg-transparent hover:bg-gray-50 text-gray-500 hover:text-gray-700 text-sm font-bold rounded-xl border border-transparent transition-all flex items-center justify-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Cancel & Return

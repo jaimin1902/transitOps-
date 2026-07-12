@@ -47,10 +47,10 @@ export default async function ExpensesPage() {
       {/* Title section */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2.5 text-primary-500 font-bold text-sm uppercase tracking-wider">
+          {/* <div className="flex items-center gap-2.5 text-primary-500 font-bold text-sm uppercase tracking-wider">
             <DollarSign className="w-4 h-4" />
             Financial Audit
-          </div>
+          </div> */}
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             Expenses tracking
           </h1>
@@ -72,9 +72,9 @@ export default async function ExpensesPage() {
           },
           trip: f.trip
             ? {
-                source: f.trip.source,
-                destination: f.trip.destination,
-              }
+              source: f.trip.source,
+              destination: f.trip.destination,
+            }
             : null,
         }))}
         initialExpenses={expenses.map((e) => ({

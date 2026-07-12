@@ -28,10 +28,10 @@ export default async function CompliancePage() {
       {/* Title section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1 text-left">
-          <div className="flex items-center gap-2.5 text-primary-500 font-bold text-sm uppercase tracking-wider">
+          {/* <div className="flex items-center gap-2.5 text-primary-500 font-bold text-sm uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4" />
             Compliance Workspace
-          </div>
+          </div> */}
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             Safety & Compliance Audit
           </h1>

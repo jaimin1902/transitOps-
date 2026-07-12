@@ -95,6 +95,11 @@ export function TripWorkspace({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Sync state when props are refreshed from server component
+  React.useEffect(() => {
+    setTrips(initialTrips);
+  }, [initialTrips]);
+
   // Modals for actions
   const [dispatchTrip, setDispatchTrip] = useState<Trip | null>(null);
   const [completeTrip, setCompleteTrip] = useState<Trip | null>(null);

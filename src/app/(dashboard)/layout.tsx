@@ -1,21 +1,9 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { hasPermission } from "@/lib/rbac";
-import Link from "next/link";
-import {
-  LayoutDashboard,
-  Truck,
-  Users,
-  Route,
-  Wrench,
-  DollarSign,
-  ShieldCheck,
-  Settings,
-  BarChart3,
-} from "lucide-react";
 import { LogoutButton } from "@/components/shared/LogoutButton";
 import { GlobalSearchBar } from "@/components/shared/GlobalSearchBar";
+import { SidebarNav } from "@/components/shared/SidebarNav";
 
 export default async function DashboardLayout({
   children,
@@ -30,64 +18,6 @@ export default async function DashboardLayout({
 
   const role = session.user.role;
 
-  // Define navigation items with their respective permission checks
-  const navItems = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      show: true,
-    },
-    {
-      name: "Fleet",
-      href: "/fleet",
-      icon: Truck,
-      show: hasPermission(role, "VIEW_VEHICLES"),
-    },
-    {
-      name: "Drivers",
-      href: "/drivers",
-      icon: Users,
-      show: hasPermission(role, "VIEW_DRIVERS"),
-    },
-    {
-      name: "Trips",
-      href: "/trips",
-      icon: Route,
-      show: hasPermission(role, "VIEW_TRIPS"),
-    },
-    {
-      name: "Maintenance",
-      href: "/maintenance",
-      icon: Wrench,
-      show: hasPermission(role, "VIEW_MAINTENANCE"),
-    },
-    {
-      name: "Fuel & Expenses",
-      href: "/expenses", // Aligned with the expenses router path
-      icon: DollarSign,
-      show: hasPermission(role, "VIEW_FUEL_EXPENSES"),
-    },
-    {
-      name: "Compliance",
-      href: "/compliance",
-      icon: ShieldCheck,
-      show: hasPermission(role, "VIEW_COMPLIANCE"),
-    },
-    {
-      name: "Analytics",
-      href: "/analytics",
-      icon: BarChart3,
-      show: hasPermission(role, "VIEW_REPORTS"),
-    },
-    {
-      name: "Settings",
-      href: "/settings",
-      icon: Settings,
-      show: hasPermission(role, "MANAGE_SETTINGS"),
-    },
-  ];
-
   return (
     <div className="flex h-screen bg-[#F5F7FA] text-gray-900 overflow-hidden font-sans">
       {/* Sidebar */}
@@ -101,23 +31,7 @@ export default async function DashboardLayout({
             <span className="font-extrabold text-xl tracking-tight text-gray-900">TransitOps</span>
           </div>
 
-          <nav className="flex-1 px-4 space-y-1">
-            {navItems
-              .filter((item) => item.show)
-              .map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-3 px-4 h-11 text-gray-600 hover:text-primary-500 hover:bg-primary-50 rounded-[8px] transition-all font-semibold text-sm group"
-                  >
-                    <Icon className="w-[20px] h-[20px] text-gray-400 group-hover:text-primary-500 transition-colors" />
-                    {item.name}
-                  </Link>
-                );
-              })}
-          </nav>
+          <SidebarNav role={role} />
         </div>
 
         {/* Logout Button Footer */}
