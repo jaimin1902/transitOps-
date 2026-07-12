@@ -5,8 +5,8 @@ import { getDashboardStats } from "@/lib/domain/dashboard.service";
 import { CustomSVGChart } from "@/components/dashboard/CustomSVGChart";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { RecentDispatches } from "@/components/dashboard/RecentDispatches";
+import { StatusBreakdownBars } from "@/components/fleet/StatusBreakdownBars";
 import {
-  Sparkles,
   TrendingUp,
   Truck,
   DollarSign,
@@ -20,12 +20,12 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const { kpis, recentTrips, recentAudits, chartData } = await getDashboardStats();
+  const { kpis, recentTrips, recentAudits, chartData, vehicles } = await getDashboardStats();
 
   return (
     <div className="space-y-6 text-left">
       {/* Welcome Banner */}
-      <div className="relative p-6 rounded-card bg-white border border-gray-200 overflow-hidden shadow-small group">
+      {/* <div className="relative p-6 rounded-card bg-white border border-gray-200 overflow-hidden shadow-small group">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-50 border border-primary-100 text-primary-500 text-xs font-semibold rounded-full">
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Top Section KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -111,6 +111,9 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Vehicle Status breakdown bars */}
+      <StatusBreakdownBars vehicles={vehicles} />
 
       {/* Middle Section Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

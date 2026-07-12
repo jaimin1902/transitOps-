@@ -72,7 +72,7 @@ export const authConfig: NextAuthConfig = {
           if (nextUrl.pathname.startsWith("/compliance") && role !== "SAFETY_OFFICER" && role !== "ADMIN") {
             return Response.redirect(new URL("/dashboard", nextUrl));
           }
-          if (nextUrl.pathname.startsWith("/reports") && role === "DRIVER") {
+          if (nextUrl.pathname.startsWith("/reports") && role === "DISPATCHER") {
             return Response.redirect(new URL("/dashboard", nextUrl));
           }
           return true;

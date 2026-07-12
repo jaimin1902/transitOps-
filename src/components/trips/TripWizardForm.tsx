@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTripSchema, CreateTripInput } from "@/lib/validations/trip";
 import { createTripAction } from "@/actions/trip.actions";
@@ -11,7 +11,6 @@ import {
   AlertCircle,
   MapPin,
   Truck,
-  User,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
@@ -51,11 +50,11 @@ export function TripWizardForm({ isOpen, onClose, vehicles, drivers }: TripWizar
     register,
     handleSubmit,
     trigger,
-    getValues,
+    watch,
     reset,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(createTripSchema) as any,
+  } = useForm<CreateTripInput>({
+    resolver: zodResolver(createTripSchema) as unknown as Resolver<CreateTripInput>,
     defaultValues: {
       source: "",
       destination: "",
@@ -66,6 +65,20 @@ export function TripWizardForm({ isOpen, onClose, vehicles, drivers }: TripWizar
       driverId: "",
     },
   });
+
+  const cargoWeightVal = watch("cargoWeight");
+  const selectedVehicleId = watch("vehicleId");
+
+  const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
+  const isOverCapacity = !!(
+    selectedVehicle &&
+    selectedVehicle.maxLoadCapacity &&
+    Number(cargoWeightVal) > selectedVehicle.maxLoadCapacity
+  );
+  const overage =
+    selectedVehicle && selectedVehicle.maxLoadCapacity
+      ? Number(cargoWeightVal) - selectedVehicle.maxLoadCapacity
+      : 0;
 
   // Populate available vehicles and drivers from props on step load
   useEffect(() => {
@@ -317,13 +330,19 @@ export function TripWizardForm({ isOpen, onClose, vehicles, drivers }: TripWizar
                     <option value="">-- Choose available vehicle --</option>
                     {availableVehicles.map((v) => (
                       <option key={v.id} value={v.id}>
-                        {v.registrationNumber} — {v.name} (Max Cap: {v.maxLoadCapacity}kg)
+                        {v.registrationNumber} — {v.name} ({v.maxLoadCapacity || 0} kg capacity)
                       </option>
                     ))}
                   </select>
                   {errors.vehicleId && (
                     <span className="text-xs text-red-650 mt-1 block font-medium">
                       {errors.vehicleId.message}
+                    </span>
+                  )}
+
+                  {isOverCapacity && (
+                    <span className="text-xs text-red-650 mt-1.5 block font-bold animate-pulse">
+                      Capacity exceeded by {overage} kg — dispatch blocked
                     </span>
                   )}
 
@@ -344,10 +363,10 @@ export function TripWizardForm({ isOpen, onClose, vehicles, drivers }: TripWizar
                     {...register("driverId")}
                     className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors select-arrow cursor-pointer"
                   >
-                    <option value="">-- Choose available driver --</option>
+                    <option value="">-- Choose eligible operator --</option>
                     {availableDrivers.map((d) => (
                       <option key={d.id} value={d.id}>
-                        {d.name} — Class: {d.licenseCategory} (Safety: {d.safetyScore}/100)
+                        {d.name} (License: {d.licenseCategory} · Score: {d.safetyScore}/100)
                       </option>
                     ))}
                   </select>
@@ -405,7 +424,7 @@ export function TripWizardForm({ isOpen, onClose, vehicles, drivers }: TripWizar
               ) : (
                 <button
                   type="submit"
-                  disabled={isSubmitting || availableVehicles.length === 0 || availableDrivers.length === 0}
+                  disabled={isSubmitting || availableVehicles.length === 0 || availableDrivers.length === 0 || isOverCapacity}
                   className="h-10 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-button text-sm font-semibold transition-colors flex items-center gap-2 shadow-small disabled:opacity-40"
                 >
                   {isSubmitting ? (

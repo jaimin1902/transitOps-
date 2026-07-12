@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { listTrips } from "@/lib/domain/trip.service";
 import { listAvailableVehiclesForDispatch } from "@/lib/domain/vehicle.service";
 import { listAvailableDriversForDispatch } from "@/lib/domain/driver.service";
-import { TripTable } from "@/components/trips/TripTable";
+import { TripWorkspace } from "@/components/trips/TripWorkspace";
 import { Route } from "lucide-react";
 
 export default async function TripsPage() {
@@ -39,8 +39,8 @@ export default async function TripsPage() {
         </div>
       </div>
 
-      {/* Main Interactive Table */}
-      <TripTable
+      {/* Main Interactive Workspace */}
+      <TripWorkspace
         initialTrips={trips.map(t => ({
           ...t,
           cargoWeight: Number(t.cargoWeight),
@@ -63,7 +63,7 @@ export default async function TripsPage() {
           id: v.id,
           name: v.name,
           registrationNumber: v.registrationNumber,
-          odometer: Number(v.odometer),
+          maxLoadCapacity: Number(v.maxLoadCapacity),
         }))}
         availableDrivers={availableDrivers.map(d => ({
           id: d.id,
@@ -71,6 +71,8 @@ export default async function TripsPage() {
           licenseCategory: d.licenseCategory,
           safetyScore: Number(d.safetyScore),
         }))}
+        userRole={session?.user?.role}
+        userDriverId={session?.user?.driverId}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import {
   listVehicles,
 } from "@/lib/domain/vehicle.service";
 import { VehicleTable } from "@/components/vehicles/VehicleTable";
+import { StatusBreakdownBars } from "@/components/fleet/StatusBreakdownBars";
 import { Truck } from "lucide-react";
 
 export default async function VehiclesPage() {
@@ -34,6 +35,9 @@ export default async function VehiclesPage() {
           </p>
         </div>
       </div>
+
+      {/* Status aggregates */}
+      <StatusBreakdownBars vehicles={vehicles} />
 
       {/* Main Interactive Table */}
       <VehicleTable

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getTripById } from "@/lib/domain/trip.service";
-import { hasPermission } from "@/lib/rbac";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -53,7 +52,6 @@ export default async function TripDetailPage({ params }: { params: { id: string 
   const trip = await getTripById(params.id);
   if (!trip) notFound();
 
-  const canManage = hasPermission(session.user.role, "MANAGE_TRIPS");
   const sc = STATUS_CONFIG[trip.status];
   const StatusIcon = sc.icon;
 

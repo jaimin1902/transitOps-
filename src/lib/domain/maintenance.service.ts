@@ -39,7 +39,7 @@ export async function createMaintenanceLog(input: CreateMaintenanceInput) {
         type: input.type,
         description: input.description || null,
         cost: input.cost,
-        status: MaintenanceStatus.OPEN,
+        status: MaintenanceStatus.ACTIVE,
         startDate: input.startDate,
       },
     });
@@ -61,7 +61,7 @@ export async function resolveMaintenanceLog(
       throw new MaintenanceServiceError("Maintenance log not found.");
     }
 
-    if (log.status !== MaintenanceStatus.OPEN) {
+    if (log.status !== MaintenanceStatus.ACTIVE) {
       throw new MaintenanceServiceError("Cannot resolve a maintenance service that is already closed.");
     }
 
@@ -69,7 +69,7 @@ export async function resolveMaintenanceLog(
     const updatedLog = await tx.maintenanceLog.update({
       where: { id: logId },
       data: {
-        status: MaintenanceStatus.CLOSED,
+        status: MaintenanceStatus.COMPLETED,
         cost: input.cost,
         endDate: input.endDate,
       },
@@ -79,7 +79,7 @@ export async function resolveMaintenanceLog(
     const openLogsCount = await tx.maintenanceLog.count({
       where: {
         vehicleId: log.vehicleId,
-        status: MaintenanceStatus.OPEN,
+        status: MaintenanceStatus.ACTIVE,
       },
     });
 

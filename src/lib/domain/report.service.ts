@@ -154,3 +154,114 @@ export async function getFuelReport(filter: DateFilter = {}) {
     date: f.date,
   }));
 }
+
+/**
+ * Monthly revenue grouping from RevenueEntry
+ */
+export async function getMonthlyRevenueChart() {
+  const entries = await prisma.revenueEntry.findMany({
+    orderBy: { month: "asc" },
+  });
+
+  const grouped: Record<string, number> = {};
+  for (const entry of entries) {
+    // Format to YYYY-MM
+    const key = entry.month.toISOString().substring(0, 7);
+    grouped[key] = (grouped[key] || 0) + entry.amount;
+  }
+
+  return Object.entries(grouped).map(([month, amount]) => ({
+    month,
+    revenue: amount,
+  }));
+}
+
+/**
+ * Top costliest vehicles by total operational cost (Fuel + Maintenance)
+ */
+export async function getTopCostliestVehicles(limit: number = 5) {
+  const vehicles = await prisma.vehicle.findMany({
+    include: {
+      fuelLogs: { select: { cost: true } },
+      maintenanceLogs: { select: { cost: true } },
+      expenses: { select: { amount: true, type: true } },
+    },
+  });
+
+  const costliest = vehicles.map((v) => {
+    const fuelCost = v.fuelLogs.reduce((acc, f) => acc + Number(f.cost), 0);
+    const maintCost = v.maintenanceLogs.reduce((acc, m) => acc + Number(m.cost), 0);
+    const operationalCost = fuelCost + maintCost;
+
+    const tollExpense = v.expenses
+      .filter((e) => e.type === "TOLL")
+      .reduce((acc, e) => acc + Number(e.amount), 0);
+    const otherExpense = v.expenses
+      .filter((e) => e.type !== "TOLL")
+      .reduce((acc, e) => acc + Number(e.amount), 0);
+
+    return {
+      id: v.id,
+      name: v.name,
+      registrationNumber: v.registrationNumber,
+      fuelCost,
+      maintCost,
+      operationalCost,
+      tollExpense,
+      otherExpense,
+    };
+  });
+
+  return costliest
+    .sort((a, b) => b.operationalCost - a.operationalCost)
+    .slice(0, limit);
+}
+
+/**
+ * ROI Report of vehicles: (Revenue - (Fuel + Maintenance)) / Acquisition Cost
+ */
+export async function getRoiReport() {
+  const vehicles = await prisma.vehicle.findMany({
+    include: {
+      fuelLogs: { select: { cost: true } },
+      maintenanceLogs: { select: { cost: true } },
+      expenses: { select: { amount: true, type: true } },
+      revenueEntries: { select: { amount: true } },
+    },
+  });
+
+  return vehicles.map((v) => {
+    const fuelCost = v.fuelLogs.reduce((acc, f) => acc + Number(f.cost), 0);
+    const maintCost = v.maintenanceLogs.reduce((acc, m) => acc + Number(m.cost), 0);
+    const operationalCost = fuelCost + maintCost;
+
+    const totalRevenue = v.revenueEntries.reduce((acc, r) => acc + r.amount, 0);
+    const netProfit = totalRevenue - operationalCost;
+
+    const acqCost = Number(v.acquisitionCost) || 1;
+    const roi = (netProfit / acqCost) * 100;
+
+    const tollExpense = v.expenses
+      .filter((e) => e.type === "TOLL")
+      .reduce((acc, e) => acc + Number(e.amount), 0);
+    const otherExpense = v.expenses
+      .filter((e) => e.type !== "TOLL")
+      .reduce((acc, e) => acc + Number(e.amount), 0);
+
+    return {
+      id: v.id,
+      name: v.name,
+      registrationNumber: v.registrationNumber,
+      acquisitionCost: Number(v.acquisitionCost),
+      totalRevenue,
+      fuelCost,
+      maintCost,
+      operationalCost,
+      tollExpense,
+      otherExpense,
+      netProfit,
+      roi: Math.round(roi * 100) / 100,
+    };
+  });
+}
+

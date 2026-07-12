@@ -19,8 +19,8 @@ export async function createTripAction(input: CreateTripInput) {
   try {
     // RBAC Security Check
     assertPermission(session?.user?.role, "MANAGE_TRIPS");
-    if (session?.user?.role === "DRIVER") {
-      return { success: false, error: "Drivers cannot register new trips." };
+    if (session?.user?.role === "DISPATCHER") {
+      return { success: false, error: "Dispatchers cannot register new trips directly — use the Trip Wizard." };
     }
 
     const trip = await createTrip(session?.user?.id || "", input);
@@ -49,7 +49,7 @@ export async function dispatchTripAction(tripId: string, input: DispatchTripInpu
     }
 
     // Row level verification for Drivers starting dispatches
-    if (session?.user?.role === "DRIVER" && session.user.driverId !== trip.driverId) {
+    if (session?.user?.role === "DISPATCHER" && session.user.driverId !== trip.driverId) {
       return { success: false, error: "Access denied: You are not assigned to this trip." };
     }
 
@@ -81,7 +81,7 @@ export async function completeTripAction(tripId: string, input: CompleteTripInpu
     }
 
     // Row level verification for Drivers completing dispatches
-    if (session?.user?.role === "DRIVER" && session.user.driverId !== trip.driverId) {
+    if (session?.user?.role === "DISPATCHER" && session.user.driverId !== trip.driverId) {
       return { success: false, error: "Access denied: You are not assigned to this trip." };
     }
 
@@ -107,8 +107,8 @@ export async function cancelTripAction(tripId: string) {
   try {
     // RBAC Security Check
     assertPermission(session?.user?.role, "MANAGE_TRIPS");
-    if (session?.user?.role === "DRIVER") {
-      return { success: false, error: "Drivers cannot cancel trips." };
+    if (session?.user?.role === "DISPATCHER") {
+      return { success: false, error: "Dispatchers cannot cancel trips." };
     }
 
     const updatedTrip = await cancelTrip(tripId, session?.user?.id || "");

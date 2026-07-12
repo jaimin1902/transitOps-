@@ -32,10 +32,14 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        if (result.error === "CredentialsSignin") {
+        console.log("NextAuth error:", result.error);
+        if (result.error === "INVALID_CREDENTIALS" || result.error === "CredentialsSignin") {
           setError("Invalid email or password.");
+        } else if (result.error.startsWith("ACCOUNT_LOCKED")) {
+          const minutes = result.error.split(":")[1] || "15";
+          setError(`Your account is locked. Please try again in ${minutes} minutes.`);
         } else {
-          setError("An unexpected error occurred. Please try again.");
+          setError("Invalid email or password. Too many failed attempts will lock your account.");
         }
         setIsLoading(false);
       } else {
@@ -96,9 +100,17 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                Password
+              </label>
+              <a
+                href="/forgot-password"
+                className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+              >
+                Forgot password?
+              </a>
+            </div>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                 <Lock className="w-5 h-5" />

@@ -6,7 +6,7 @@ export const createMaintenanceSchema = z.object({
   type: z.string().min(2, "Maintenance type must be at least 2 characters").trim(),
   description: z.string().trim().nullable().optional(),
   cost: z.coerce.number().nonnegative("Estimated cost cannot be negative").default(0),
-  status: z.nativeEnum(MaintenanceStatus).default(MaintenanceStatus.OPEN),
+  status: z.nativeEnum(MaintenanceStatus).default(MaintenanceStatus.ACTIVE),
   startDate: z.coerce.date().default(() => new Date()),
 });
 

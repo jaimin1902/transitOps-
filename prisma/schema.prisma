@@ -10,7 +10,8 @@ datasource db {
 
 enum Role {
   FLEET_MANAGER
-  DRIVER
+  DISPATCHER        // renamed from DRIVER — login role that creates/assigns trips;
+                    // NOT the same as the Driver model (physical drivers with licenses).
   SAFETY_OFFICER
   FINANCIAL_ANALYST
   ADMIN
@@ -38,8 +39,8 @@ enum TripStatus {
 }
 
 enum MaintenanceStatus {
-  OPEN
-  CLOSED
+  ACTIVE      // was OPEN — UI label: "In Shop"
+  COMPLETED   // was CLOSED — UI label: "Completed"
 }
 
 enum ExpenseType {
@@ -49,14 +50,29 @@ enum ExpenseType {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  role         Role
-  createdAt    DateTime @default(now())
-  driver       Driver?  // optional 1:1 if a Driver logs in themselves
-  tripsCreated Trip[]   // Relation to trips created by this user
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  passwordHash        String
+  name                String
+  role                Role
+  failedLoginAttempts Int       @default(0)   // account lockout after 5 failed attempts
+  lockedUntil         DateTime?               // set when failedLoginAttempts hits 5; lock for 15 min
+  createdAt           DateTime  @default(now())
+  driver              Driver?   // optional 1:1 if a Driver logs in themselves
+  tripsCreated        Trip[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
 }
 
 model Vehicle {
@@ -77,6 +93,7 @@ model Vehicle {
   fuelLogs          FuelLog[]
   expenses          Expense[]
   documents         VehicleDocument[]
+  revenueEntries    RevenueEntry[]
 
   @@index([status])
   @@index([type])
@@ -115,10 +132,10 @@ model Trip {
   startOdometer   Float?
   endOdometer     Float?
   fuelConsumed    Float?
-  revenue        Float      @default(0) // Resolved ROI calculation gap
+  revenue        Float      @default(0)
   status         TripStatus @default(DRAFT)
   createdById    String
-  createdBy      User       @relation(fields: [createdById], references: [id]) // Resolved user relation gap
+  createdBy      User       @relation(fields: [createdById], references: [id])
   createdAt      DateTime   @default(now())
   dispatchedAt   DateTime?
   completedAt    DateTime?
@@ -138,7 +155,7 @@ model MaintenanceLog {
   type        String
   description String?
   cost        Float              @default(0)
-  status      MaintenanceStatus  @default(OPEN)
+  status      MaintenanceStatus  @default(ACTIVE)
   startDate   DateTime           @default(now())
   endDate     DateTime?
 
@@ -200,4 +217,35 @@ model AuditLog {
   timestamp  DateTime @default(now())
 
   @@index([userId])
+}
+
+// Org settings — singleton row (depotName, currency, distanceUnit)
+model Settings {
+  id           String @id @default(cuid())
+  depotName    String @default("TransitOps Depot")
+  currency     String @default("USD")
+  distanceUnit String @default("km")  // "km" | "miles"
+}
+
+// Per-vehicle, per-month revenue entry — confirmed by Analytics "Monthly Revenue" chart
+// and ROI formula: (Revenue - (Maint + Fuel)) / Acquisition Cost
+model RevenueEntry {
+  id        String   @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  month     DateTime // first-of-month marker, e.g. 2026-07-01
+  amount    Float
+
+  @@unique([vehicleId, month])
+  @@index([vehicleId])
+}
+
+// Editable RBAC matrix rows — seeded with defaults, editable via Settings page
+model RolePermission {
+  id       String @id @default(cuid())
+  role     Role
+  module   String // "fleet" | "drivers" | "trips" | "maintenance" | "fuel_expenses" | "analytics" | "compliance" | "settings"
+  access   String @default("none") // "none" | "view" | "edit"
+
+  @@unique([role, module])
 }

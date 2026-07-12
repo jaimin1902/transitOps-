@@ -6,6 +6,7 @@ import { listDrivers } from "@/lib/domain/driver.service";
 import { prisma } from "@/lib/prisma";
 import { DriverTable } from "@/components/drivers/DriverTable";
 import { Users } from "lucide-react";
+import { Role } from "@prisma/client";
 
 export default async function DriversPage() {
   const session = await auth();
@@ -26,7 +27,7 @@ export default async function DriversPage() {
     listDrivers(),
     prisma.user.findMany({
       where: {
-        role: "DRIVER",
+        role: Role.DISPATCHER,
         driver: null,
       },
       select: {

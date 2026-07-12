@@ -13,7 +13,8 @@ export type ActionType =
   | "MANAGE_FUEL_EXPENSES"
   | "VIEW_FUEL_EXPENSES"
   | "VIEW_REPORTS"
-  | "VIEW_COMPLIANCE";
+  | "VIEW_COMPLIANCE"
+  | "MANAGE_SETTINGS";
 
 const PERMISSION_MATRIX: Record<Role, Partial<Record<ActionType, boolean>>> = {
   ADMIN: {
@@ -29,6 +30,7 @@ const PERMISSION_MATRIX: Record<Role, Partial<Record<ActionType, boolean>>> = {
     VIEW_FUEL_EXPENSES: true,
     VIEW_REPORTS: true,
     VIEW_COMPLIANCE: true,
+    MANAGE_SETTINGS: true,
   },
   FLEET_MANAGER: {
     MANAGE_VEHICLES: true,
@@ -43,27 +45,32 @@ const PERMISSION_MATRIX: Record<Role, Partial<Record<ActionType, boolean>>> = {
     VIEW_FUEL_EXPENSES: true,
     VIEW_REPORTS: true,
     VIEW_COMPLIANCE: true,
+    MANAGE_SETTINGS: true,
   },
-  DRIVER: {
+  // DISPATCHER: login role that creates/assigns trips (renamed from DRIVER)
+  // NOT the same as the Driver data model (physical drivers with licenses)
+  DISPATCHER: {
     VIEW_VEHICLES: true,
     VIEW_DRIVERS: false,
-    MANAGE_TRIPS: true, // Drivers can update their assigned trip statuses (dispatch/complete)
+    MANAGE_TRIPS: true, // Dispatchers create and manage trip assignments
     VIEW_TRIPS: true,
-    MANAGE_FUEL_EXPENSES: true, // Fuel logging for own trips
+    MANAGE_FUEL_EXPENSES: true, // Fuel logging for trips they manage
     VIEW_FUEL_EXPENSES: true,
     VIEW_MAINTENANCE: false,
     VIEW_REPORTS: false,
     VIEW_COMPLIANCE: false,
+    MANAGE_SETTINGS: false,
   },
   SAFETY_OFFICER: {
     VIEW_VEHICLES: true,
-    MANAGE_DRIVERS: true, // Update compliance status/suspend
+    MANAGE_DRIVERS: true, // Update compliance status / suspend
     VIEW_DRIVERS: true,
     VIEW_TRIPS: true,
     VIEW_MAINTENANCE: true,
     VIEW_FUEL_EXPENSES: false,
-    VIEW_REPORTS: true, // Can see safety compliance reports
+    VIEW_REPORTS: true, // Safety compliance reports
     VIEW_COMPLIANCE: true,
+    MANAGE_SETTINGS: false,
   },
   FINANCIAL_ANALYST: {
     VIEW_VEHICLES: true,
@@ -71,8 +78,9 @@ const PERMISSION_MATRIX: Record<Role, Partial<Record<ActionType, boolean>>> = {
     VIEW_TRIPS: true,
     VIEW_MAINTENANCE: true,
     VIEW_FUEL_EXPENSES: true,
-    VIEW_REPORTS: true, // Full reports access
+    VIEW_REPORTS: true, // Full analytics access
     VIEW_COMPLIANCE: false,
+    MANAGE_SETTINGS: false,
   },
 };
 

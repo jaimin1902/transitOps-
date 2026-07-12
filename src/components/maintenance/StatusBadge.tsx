@@ -7,14 +7,14 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   const configs: Record<MaintenanceStatus, { text: string; bg: string; textClass: string; dot: string }> = {
-    OPEN: {
-      text: "Active / Open",
+    ACTIVE: {
+      text: "In Shop",
       bg: "bg-amber-50 border border-amber-200",
       textClass: "text-amber-700",
       dot: "bg-amber-500",
     },
-    CLOSED: {
-      text: "Resolved / Closed",
+    COMPLETED: {
+      text: "Completed",
       bg: "bg-emerald-50 border border-emerald-200",
       textClass: "text-emerald-700",
       dot: "bg-emerald-500",

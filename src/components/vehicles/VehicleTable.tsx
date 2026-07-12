@@ -43,11 +43,9 @@ interface Vehicle {
 
 interface VehicleTableProps {
   initialVehicles: Vehicle[];
-  uniqueTypes?: string[];
-  uniqueRegions?: string[];
 }
 
-export function VehicleTable({ initialVehicles, uniqueTypes: propTypes, uniqueRegions: propRegions }: VehicleTableProps) {
+export function VehicleTable({ initialVehicles }: VehicleTableProps) {
   const vehicles = initialVehicles;
   const { data: session } = useSession();
   const userRole = session?.user?.role;

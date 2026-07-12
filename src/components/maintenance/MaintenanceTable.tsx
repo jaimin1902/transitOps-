@@ -159,7 +159,7 @@ export function MaintenanceTable({ initialLogs, availableVehicles }: Maintenance
         header: () => <div className="text-right">Actions</div>,
         cell: ({ row }) => {
           const log = row.original;
-          const isOpen = log.status === MaintenanceStatus.OPEN;
+          const isOpen = log.status === MaintenanceStatus.ACTIVE;
 
           return (
             <div className="flex items-center justify-end gap-2">
@@ -224,8 +224,8 @@ export function MaintenanceTable({ initialLogs, availableVehicles }: Maintenance
             className="h-[42px] px-3.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors cursor-pointer appearance-none pr-8 select-arrow"
           >
             <option value="">All Statuses</option>
-            <option value={MaintenanceStatus.OPEN}>Active / Open</option>
-            <option value={MaintenanceStatus.CLOSED}>Resolved / Closed</option>
+            <option value={MaintenanceStatus.ACTIVE}>In Shop</option>
+            <option value={MaintenanceStatus.COMPLETED}>Completed</option>
           </select>
 
           {(globalFilter || selectedStatus) && (

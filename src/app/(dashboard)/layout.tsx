@@ -11,7 +11,8 @@ import {
   Wrench,
   DollarSign,
   ShieldCheck,
-  User as UserIcon,
+  Settings,
+  BarChart3,
 } from "lucide-react";
 import { LogoutButton } from "@/components/shared/LogoutButton";
 import { GlobalSearchBar } from "@/components/shared/GlobalSearchBar";
@@ -38,8 +39,8 @@ export default async function DashboardLayout({
       show: true,
     },
     {
-      name: "Vehicles",
-      href: "/vehicles",
+      name: "Fleet",
+      href: "/fleet",
       icon: Truck,
       show: hasPermission(role, "VIEW_VEHICLES"),
     },
@@ -73,6 +74,18 @@ export default async function DashboardLayout({
       icon: ShieldCheck,
       show: hasPermission(role, "VIEW_COMPLIANCE"),
     },
+    {
+      name: "Analytics",
+      href: "/analytics",
+      icon: BarChart3,
+      show: hasPermission(role, "VIEW_REPORTS"),
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: Settings,
+      show: hasPermission(role, "MANAGE_SETTINGS"),
+    },
   ];
 
   return (
@@ -88,20 +101,6 @@ export default async function DashboardLayout({
             <span className="font-extrabold text-xl tracking-tight text-gray-900">TransitOps</span>
           </div>
 
-          {/* User Profile Summary */}
-          <div className="p-4 mx-4 my-4 bg-gray-50 border border-gray-200 rounded-xl flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center border border-primary-100 shadow-small shrink-0">
-              <UserIcon className="w-5 h-5" />
-            </div>
-            <div className="overflow-hidden">
-              <h4 className="font-bold text-sm truncate text-gray-900">{session.user.name}</h4>
-              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                {role.replace("_", " ")}
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation Links */}
           <nav className="flex-1 px-4 space-y-1">
             {navItems
               .filter((item) => item.show)
@@ -130,7 +129,7 @@ export default async function DashboardLayout({
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col overflow-y-auto bg-[#F5F7FA] relative">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between shrink-0">
+        <header className="sticky top-0 h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between shrink-0">
           <GlobalSearchBar />
           <div className="flex items-center gap-4 text-xs font-semibold px-3 py-1.5 bg-green-50 rounded-full border border-green-200 text-green-800 shadow-small">
             <span className="w-2.5 h-2.5 bg-green-600 rounded-full animate-pulse"></span>

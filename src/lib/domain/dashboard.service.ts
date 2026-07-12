@@ -14,6 +14,7 @@ export async function getDashboardStats() {
     expensesSummary,
     recentTrips,
     recentAudits,
+    vehicles,
   ] = await Promise.all([
     // Vehicles count
     prisma.vehicle.count(),
@@ -53,6 +54,8 @@ export async function getDashboardStats() {
       take: 5,
       orderBy: { timestamp: "desc" },
     }),
+    // Vehicles status list
+    prisma.vehicle.findMany({ select: { status: true } }),
   ]);
 
   // Calculations
@@ -115,5 +118,6 @@ export async function getDashboardStats() {
     })),
     recentAudits,
     chartData,
+    vehicles,
   };
 }

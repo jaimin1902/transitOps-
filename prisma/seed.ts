@@ -7,6 +7,10 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Clearing database...');
   // Delete in reverse order of dependencies
+  await prisma.rolePermission.deleteMany({});
+  await prisma.settings.deleteMany({});
+  await prisma.revenueEntry.deleteMany({});
+  await prisma.passwordResetToken.deleteMany({});
   await prisma.auditLog.deleteMany({});
   await prisma.notificationLog.deleteMany({});
   await prisma.vehicleDocument.deleteMany({});
@@ -32,9 +36,9 @@ async function main() {
   const driverUser = await prisma.user.create({
     data: {
       email: 'driver@transitops.com',
-      name: 'David Driver',
+      name: 'David Dispatcher',
       passwordHash,
-      role: Role.DRIVER,
+      role: Role.DISPATCHER,
     },
   });
 
@@ -152,7 +156,7 @@ async function main() {
       type: 'Engine Service',
       description: 'Scheduled major engine checkup and filter replacements.',
       cost: 1200,
-      status: 'OPEN',
+      status: 'ACTIVE',
       startDate: new Date(),
     },
   });
@@ -176,6 +180,74 @@ async function main() {
       date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     },
   });
+
+  console.log('Seeding settings...');
+  await prisma.settings.create({
+    data: {
+      depotName: 'TransitOps Depot',
+      currency: 'USD',
+      distanceUnit: 'km',
+    },
+  });
+
+  console.log('Seeding role permissions...');
+  const defaultPermissions = [
+    // ADMIN
+    { role: Role.ADMIN, module: 'fleet', access: 'edit' },
+    { role: Role.ADMIN, module: 'drivers', access: 'edit' },
+    { role: Role.ADMIN, module: 'trips', access: 'edit' },
+    { role: Role.ADMIN, module: 'maintenance', access: 'edit' },
+    { role: Role.ADMIN, module: 'fuel_expenses', access: 'edit' },
+    { role: Role.ADMIN, module: 'analytics', access: 'edit' },
+    { role: Role.ADMIN, module: 'compliance', access: 'edit' },
+    { role: Role.ADMIN, module: 'settings', access: 'edit' },
+
+    // FLEET_MANAGER
+    { role: Role.FLEET_MANAGER, module: 'fleet', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'drivers', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'trips', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'maintenance', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'fuel_expenses', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'analytics', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'compliance', access: 'edit' },
+    { role: Role.FLEET_MANAGER, module: 'settings', access: 'edit' },
+
+    // DISPATCHER
+    { role: Role.DISPATCHER, module: 'fleet', access: 'view' },
+    { role: Role.DISPATCHER, module: 'drivers', access: 'none' },
+    { role: Role.DISPATCHER, module: 'trips', access: 'edit' },
+    { role: Role.DISPATCHER, module: 'maintenance', access: 'none' },
+    { role: Role.DISPATCHER, module: 'fuel_expenses', access: 'edit' },
+    { role: Role.DISPATCHER, module: 'analytics', access: 'none' },
+    { role: Role.DISPATCHER, module: 'compliance', access: 'none' },
+    { role: Role.DISPATCHER, module: 'settings', access: 'none' },
+
+    // SAFETY_OFFICER
+    { role: Role.SAFETY_OFFICER, module: 'fleet', access: 'view' },
+    { role: Role.SAFETY_OFFICER, module: 'drivers', access: 'edit' },
+    { role: Role.SAFETY_OFFICER, module: 'trips', access: 'view' },
+    { role: Role.SAFETY_OFFICER, module: 'maintenance', access: 'view' },
+    { role: Role.SAFETY_OFFICER, module: 'fuel_expenses', access: 'none' },
+    { role: Role.SAFETY_OFFICER, module: 'analytics', access: 'view' },
+    { role: Role.SAFETY_OFFICER, module: 'compliance', access: 'edit' },
+    { role: Role.SAFETY_OFFICER, module: 'settings', access: 'none' },
+
+    // FINANCIAL_ANALYST
+    { role: Role.FINANCIAL_ANALYST, module: 'fleet', access: 'view' },
+    { role: Role.FINANCIAL_ANALYST, module: 'drivers', access: 'view' },
+    { role: Role.FINANCIAL_ANALYST, module: 'trips', access: 'view' },
+    { role: Role.FINANCIAL_ANALYST, module: 'maintenance', access: 'view' },
+    { role: Role.FINANCIAL_ANALYST, module: 'fuel_expenses', access: 'edit' },
+    { role: Role.FINANCIAL_ANALYST, module: 'analytics', access: 'edit' },
+    { role: Role.FINANCIAL_ANALYST, module: 'compliance', access: 'none' },
+    { role: Role.FINANCIAL_ANALYST, module: 'settings', access: 'none' },
+  ];
+
+  for (const perm of defaultPermissions) {
+    await prisma.rolePermission.create({
+      data: perm,
+    });
+  }
 
   console.log('Seeding completed successfully!');
 }

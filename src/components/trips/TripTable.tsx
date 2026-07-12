@@ -90,7 +90,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [showOnlyMine, setShowOnlyMine] = useState(userRole === "DRIVER");
+  const [showOnlyMine, setShowOnlyMine] = useState(userRole === "DISPATCHER");
 
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [dispatchTrip, setDispatchTrip] = useState<Trip | null>(null);
@@ -99,7 +99,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
   const resetFilters = () => {
     setGlobalFilter("");
     setSelectedStatus("");
-    setShowOnlyMine(userRole === "DRIVER");
+    setShowOnlyMine(userRole === "DISPATCHER");
   };
 
   const handleCancel = async (id: string) => {
@@ -326,7 +326,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
           </select>
 
           {/* Assigned to me toggle */}
-          {userRole === "DRIVER" && (
+          {userRole === "DISPATCHER" && (
             <label className="flex items-center gap-2 h-[42px] px-3.5 bg-white border border-gray-300 text-gray-750 text-sm rounded-input cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -339,7 +339,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
           )}
 
           {/* Clear Filters */}
-          {(globalFilter || selectedStatus || showOnlyMine !== (userRole === "DRIVER")) && (
+          {(globalFilter || selectedStatus || showOnlyMine !== (userRole === "DISPATCHER")) && (
             <button
               onClick={resetFilters}
               title="Reset all filters"
