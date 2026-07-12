@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -93,6 +94,7 @@ export function ExpenseWorkspace({
   fuelStats,
   expenseStats,
 }: ExpenseWorkspaceProps) {
+  const router = useRouter();
   const { data: session } = useSession();
   const userRole = session?.user?.role;
   const canManage = hasPermission(userRole, "MANAGE_FUEL_EXPENSES");
@@ -602,7 +604,7 @@ export function ExpenseWorkspace({
         isOpen={isFuelOpen}
         onClose={() => {
           setIsFuelOpen(false);
-          window.location.reload();
+          router.refresh();
         }}
         vehicles={vehicles}
         trips={trips}
@@ -613,7 +615,7 @@ export function ExpenseWorkspace({
         isOpen={isExpenseOpen}
         onClose={() => {
           setIsExpenseOpen(false);
-          window.location.reload();
+          router.refresh();
         }}
         vehicles={vehicles}
       />

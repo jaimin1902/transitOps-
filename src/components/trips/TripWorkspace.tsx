@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { TripStatus } from "@prisma/client";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,6 +88,7 @@ export function TripWorkspace({
   userRole,
   userDriverId,
 }: TripWorkspaceProps) {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<"live" | "registry">("live");
   const [trips, setTrips] = useState<Trip[]>(initialTrips);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -541,7 +543,7 @@ export function TripWorkspace({
           isOpen={!!dispatchTrip}
           onClose={() => {
             setDispatchTrip(null);
-            window.location.reload();
+            router.refresh();
           }}
           trip={{
             id: dispatchTrip.id,
@@ -559,7 +561,7 @@ export function TripWorkspace({
           isOpen={!!completeTrip}
           onClose={() => {
             setCompleteTrip(null);
-            window.location.reload();
+            router.refresh();
           }}
           trip={{
             id: completeTrip.id,

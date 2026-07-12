@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -46,6 +47,7 @@ interface VehicleTableProps {
 }
 
 export function VehicleTable({ initialVehicles }: VehicleTableProps) {
+  const router = useRouter();
   const vehicles = initialVehicles;
   const { data: session } = useSession();
   const userRole = session?.user?.role;
@@ -81,7 +83,7 @@ export function VehicleTable({ initialVehicles }: VehicleTableProps) {
       const res = await retireVehicleAction(id);
       if (res.success) {
         alert("Vehicle retired successfully.");
-        window.location.reload();
+        router.refresh();
       } else {
         alert(res.error || "Failed to retire vehicle.");
       }
@@ -407,7 +409,7 @@ export function VehicleTable({ initialVehicles }: VehicleTableProps) {
         onClose={() => {
           setIsDialogOpen(false);
           setEditingVehicle(null);
-          window.location.reload();
+          router.refresh();
         }}
         vehicle={editingVehicle}
       />

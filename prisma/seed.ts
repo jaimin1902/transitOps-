@@ -19,6 +19,7 @@ async function main() {
   await prisma.maintenanceLog.deleteMany({});
   await prisma.trip.deleteMany({});
   await prisma.driver.deleteMany({});
+  await prisma.vehicle.deleteMany({});
   await prisma.user.deleteMany({});
 
   console.log('Seeding users...');
@@ -180,6 +181,34 @@ async function main() {
       date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     },
   });
+
+  console.log('Seeding monthly revenue entries...');
+  const months = [
+    { date: new Date('2026-01-01T00:00:00Z'), amount1: 800, amount2: 700 },
+    { date: new Date('2026-02-01T00:00:00Z'), amount1: 1200, amount2: 1000 },
+    { date: new Date('2026-03-01T00:00:00Z'), amount1: 1000, amount2: 900 },
+    { date: new Date('2026-04-01T00:00:00Z'), amount1: 1500, amount2: 1300 },
+    { date: new Date('2026-05-01T00:00:00Z'), amount1: 1300, amount2: 1200 },
+    { date: new Date('2026-06-01T00:00:00Z'), amount1: 2000, amount2: 1600 },
+    { date: new Date('2026-07-01T00:00:00Z'), amount1: 1700, amount2: 1400 },
+  ];
+
+  for (const m of months) {
+    await prisma.revenueEntry.create({
+      data: {
+        vehicleId: vehicle1.id,
+        month: m.date,
+        amount: m.amount1,
+      },
+    });
+    await prisma.revenueEntry.create({
+      data: {
+        vehicleId: vehicle2.id,
+        month: m.date,
+        amount: m.amount2,
+      },
+    });
+  }
 
   console.log('Seeding settings...');
   await prisma.settings.create({

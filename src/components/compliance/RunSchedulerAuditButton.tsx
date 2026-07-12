@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { runCronChecksAction } from "@/actions/cron.actions";
 import { Play, Loader2 } from "lucide-react";
 
 export function RunSchedulerAuditButton() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const handleRunAudit = () => {
@@ -23,7 +25,7 @@ export function RunSchedulerAuditButton() {
             `- Document Alerts: ${data.documentAlerts}\n` +
             `Logged ${data.totalAlertsLogged} total warning events to audits & notification logs.`
           );
-          window.location.reload();
+          router.refresh();
         } else {
           alert(res.error || "Failed to execute simulated scheduler audit.");
         }

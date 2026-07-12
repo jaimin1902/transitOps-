@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -80,6 +81,7 @@ interface TripTableProps {
 }
 
 export function TripTable({ initialTrips, availableVehicles, availableDrivers, userDriverId }: TripTableProps) {
+  const router = useRouter();
   const trips = initialTrips;
   const vehicles = availableVehicles;
   const drivers = availableDrivers;
@@ -111,7 +113,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
       const res = await cancelTripAction(id);
       if (res.success) {
         alert("Dispatch cancelled successfully.");
-        window.location.reload();
+        router.refresh();
       } else {
         alert(res.error || "Failed to cancel trip.");
       }
@@ -432,7 +434,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
         isOpen={isWizardOpen}
         onClose={() => {
           setIsWizardOpen(false);
-          window.location.reload();
+          router.refresh();
         }}
         vehicles={vehicles}
         drivers={drivers}
@@ -443,7 +445,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
           isOpen={!!dispatchTrip}
           onClose={() => {
             setDispatchTrip(null);
-            window.location.reload();
+            router.refresh();
           }}
           trip={{
             id: dispatchTrip.id,
@@ -461,7 +463,7 @@ export function TripTable({ initialTrips, availableVehicles, availableDrivers, u
           isOpen={!!completeTrip}
           onClose={() => {
             setCompleteTrip(null);
-            window.location.reload();
+            router.refresh();
           }}
           trip={{
             id: completeTrip.id,

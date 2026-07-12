@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -55,6 +56,7 @@ interface MaintenanceTableProps {
 }
 
 export function MaintenanceTable({ initialLogs, availableVehicles }: MaintenanceTableProps) {
+  const router = useRouter();
   const { data: session } = useSession();
   const userRole = session?.user?.role;
   const canManage = hasPermission(userRole, "MANAGE_MAINTENANCE");
@@ -304,13 +306,13 @@ export function MaintenanceTable({ initialLogs, availableVehicles }: Maintenance
 
       <MaintenanceDialogForm
         isOpen={isScheduleOpen}
-        onClose={() => { setIsScheduleOpen(false); window.location.reload(); }}
+        onClose={() => { setIsScheduleOpen(false); router.refresh(); }}
         vehicles={availableVehicles}
       />
 
       <MaintenanceResolveModal
         isOpen={!!resolvingLog}
-        onClose={() => { setResolvingLog(null); window.location.reload(); }}
+        onClose={() => { setResolvingLog(null); router.refresh(); }}
         log={resolvingLog}
       />
     </div>

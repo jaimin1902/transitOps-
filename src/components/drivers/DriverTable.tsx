@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/utils/date";
 import {
   useReactTable,
   getCoreRowModel,
@@ -54,6 +56,7 @@ interface DriverTableProps {
 }
 
 export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps) {
+  const router = useRouter();
   const drivers = initialDrivers;
   const { data: session } = useSession();
   const userRole = session?.user?.role;
@@ -76,7 +79,7 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
       const res = await suspendDriverAction(id);
       if (res.success) {
         alert("Driver suspended successfully.");
-        window.location.reload();
+        router.refresh();
       } else {
         alert(res.error || "Failed to suspend driver.");
       }
@@ -175,7 +178,7 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
           return (
             <div className="flex items-center gap-1.5">
               <span className={isExpired ? "text-rose-600 font-bold" : isExpiringSoon ? "text-amber-600 font-bold" : "text-gray-700 font-medium"}>
-                {expiry.toLocaleDateString()}
+                {formatDate(expiry)}
               </span>
               {isExpired && <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0 animate-bounce" />}
               {isExpiringSoon && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
@@ -190,25 +193,15 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
       },
       {
         accessorKey: "safetyScore",
-        header: ({ column }) => (
-          <button
-            className="flex items-center gap-1 hover:text-gray-900 font-bold transition-colors"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Safety Score
-            <ArrowUpDown className="w-3.5 h-3.5" />
-          </button>
-        ),
+        header: "Safety Score",
         cell: (info) => {
           const score = info.getValue() as number;
-          let color = "text-emerald-600";
-          if (score < 70) color = "text-rose-600 font-extrabold";
-          else if (score < 85) color = "text-amber-600 font-bold";
-
           return (
-            <span className={`text-sm font-semibold ${color}`}>
-              {score} / 100
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className={`text-sm font-extrabold ${score >= 90 ? "text-emerald-600" : score >= 75 ? "text-amber-600" : "text-rose-600"}`}>
+                {score}/100
+              </span>
+            </div>
           );
         },
       },
@@ -219,18 +212,15 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
       },
       {
         id: "actions",
-        header: () => <div className="text-right">Actions</div>,
+        header: "Actions",
         cell: ({ row }) => {
           const driver = row.original;
-          const isOnTrip = driver.status === DriverStatus.ON_TRIP;
-          const isSuspended = driver.status === DriverStatus.SUSPENDED;
-
           return (
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center gap-2">
               <Link
                 href={`/drivers/${driver.id}`}
-                title="View driver profile"
-                className="p-1.5 bg-white border border-gray-300 hover:border-primary-300 text-gray-500 hover:text-primary-500 rounded-lg transition-colors shadow-small"
+                className="p-1 text-gray-500 hover:text-primary-500 hover:bg-primary-50 rounded transition-colors"
+                title="View profile"
               >
                 <Eye className="w-4 h-4" />
               </Link>
@@ -238,19 +228,20 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
                 <>
                   <button
                     onClick={() => handleEdit(driver)}
-                    title="Edit driver"
-                    className="p-1.5 bg-white border border-gray-300 hover:border-primary-300 text-gray-500 hover:text-primary-500 rounded-lg transition-colors shadow-small"
+                    className="p-1 text-gray-500 hover:text-amber-500 hover:bg-amber-50 rounded transition-colors"
+                    title="Edit profile"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => handleSuspend(driver.id)}
-                    disabled={isOnTrip || isSuspended}
-                    title={isOnTrip ? "Cannot suspend driver on a trip" : isSuspended ? "Already suspended" : "Suspend driver"}
-                    className="p-1.5 bg-white border border-gray-300 hover:border-red-300 text-gray-450 hover:text-red-650 disabled:opacity-30 rounded-lg transition-colors shadow-small"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {driver.status !== DriverStatus.SUSPENDED && (
+                    <button
+                      onClick={() => handleSuspend(driver.id)}
+                      className="p-1 text-gray-500 hover:text-rose-500 hover:bg-rose-50 rounded transition-colors"
+                      title="Suspend driver"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -264,75 +255,65 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
   const table = useReactTable({
     data: filteredDrivers,
     columns,
-    state: {
-      sorting,
-    },
+    state: { sorting, globalFilter },
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      pagination: {
-        pageSize: 10,
-      },
+      pagination: { pageSize: 6 },
     },
   });
 
   return (
-    <div className="space-y-6 text-left">
-      {/* Header controls */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
-        {/* Search */}
-        <div className="relative max-w-sm w-full">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-            <Search className="w-4 h-4" />
-          </span>
-          <input
-            type="text"
-            placeholder="Search driver name, license..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full h-[42px] pl-10 pr-4 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-all shadow-inner"
-          />
-        </div>
+    <div className="space-y-4">
+      {/* Search and filter controls bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-1 items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              placeholder="Search by driver name, license, contact number..."
+              className="w-full h-[42px] pl-10 pr-4 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors shadow-small"
+            />
+          </div>
 
-        {/* Filters and Add button */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Status Filter */}
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="h-[42px] px-3.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors cursor-pointer appearance-none pr-8 relative select-arrow"
+            className="h-[42px] px-3.5 bg-white border border-gray-300 text-gray-700 text-xs rounded-input focus:outline-none focus:border-primary-500 select-arrow min-w-[140px] cursor-pointer shadow-small font-semibold"
           >
-            <option value="">All Statuses</option>
+            <option value="">Status: All</option>
             <option value={DriverStatus.AVAILABLE}>Available</option>
             <option value={DriverStatus.ON_TRIP}>On Trip</option>
             <option value={DriverStatus.OFF_DUTY}>Off Duty</option>
             <option value={DriverStatus.SUSPENDED}>Suspended</option>
           </select>
 
-          {/* Clear Filters */}
           {(globalFilter || selectedStatus) && (
             <button
               onClick={resetFilters}
-              title="Reset all filters"
-              className="h-10 px-3 bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 rounded-button transition-colors flex items-center justify-center shadow-small"
+              title="Reset filters"
+              className="h-[42px] px-3 bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 rounded-button transition-colors flex items-center justify-center shadow-small"
             >
               <FilterX className="w-4 h-4" />
             </button>
           )}
-
-          {/* New Driver Button */}
-          {canManage && (
-            <button
-              onClick={handleCreate}
-              className="h-10 px-4 bg-primary-500 hover:bg-primary-600 text-white rounded-button text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-small"
-            >
-              <Plus className="w-4 h-4" />
-              Add driver
-            </button>
-          )}
         </div>
+
+        {canManage && (
+          <button
+            onClick={() => { setEditingDriver(null); setIsDialogOpen(true); }}
+            className="h-[42px] px-4 bg-primary-500 hover:bg-primary-600 text-white rounded-button text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-small"
+          >
+            <Plus className="w-4 h-4" />
+            Add Driver
+          </button>
+        )}
       </div>
 
       {/* Table container */}
@@ -366,7 +347,7 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
               ) : (
                 <tr>
                   <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-400 font-medium">
-                    No matching drivers found.
+                    No matching driver profiles registered.
                   </td>
                 </tr>
               )}
@@ -406,7 +387,7 @@ export function DriverTable({ initialDrivers, unlinkedUsers }: DriverTableProps)
         onClose={() => {
           setIsDialogOpen(false);
           setEditingDriver(null);
-          window.location.reload();
+          router.refresh();
         }}
         driver={editingDriver}
         unlinkedUsers={unlinkedUsers}

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { VehicleStatus } from "@prisma/client";
 import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Truck,
@@ -88,6 +89,7 @@ interface VehicleInspectViewProps {
 }
 
 export function VehicleInspectView({ vehicle }: VehicleInspectViewProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"overview" | "trips" | "maintenance" | "finance" | "documents">(
     "overview"
   );
@@ -576,7 +578,7 @@ export function VehicleInspectView({ vehicle }: VehicleInspectViewProps) {
         isOpen={isDocOpen}
         onClose={() => {
           setIsDocOpen(false);
-          window.location.reload();
+          router.refresh();
         }}
         vehicleId={vehicle.id}
       />

@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { assertPermission } from "@/lib/rbac";
+import { prisma } from "@/lib/prisma";
 import {
   createTrip,
   dispatchTrip,
@@ -19,8 +20,16 @@ export async function createTripAction(input: CreateTripInput) {
   try {
     // RBAC Security Check
     assertPermission(session?.user?.role, "MANAGE_TRIPS");
-    if (session?.user?.role === "DISPATCHER") {
-      return { success: false, error: "Dispatchers cannot register new trips directly — use the Trip Wizard." };
+
+    // Validate that the user exists in the database (handles post-seed session desync)
+    const userExists = await prisma.user.findUnique({
+      where: { id: session?.user?.id || "" },
+    });
+    if (!userExists) {
+      return {
+        success: false,
+        error: "Your session is invalid or the database has been re-seeded. Please sign out and sign back in to refresh your credentials.",
+      };
     }
 
     const trip = await createTrip(session?.user?.id || "", input);
