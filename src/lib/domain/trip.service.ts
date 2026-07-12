@@ -222,13 +222,36 @@ export async function cancelTrip(tripId: string, userId: string) {
   });
 }
 
+/**
+ * Get a single trip with full details — used by /trips/[id]
+ */
 export async function getTripById(id: string) {
   return prisma.trip.findUnique({
     where: { id },
     include: {
-      vehicle: true,
-      driver: true,
-      createdBy: true,
+      vehicle: {
+        select: {
+          id: true,
+          registrationNumber: true,
+          name: true,
+          type: true,
+          odometer: true,
+          maxLoadCapacity: true,
+          status: true,
+        },
+      },
+      driver: {
+        select: {
+          id: true,
+          name: true,
+          licenseNumber: true,
+          licenseCategory: true,
+          safetyScore: true,
+          status: true,
+        },
+      },
+      fuelLogs: { orderBy: { date: "desc" } },
+      createdBy: { select: { name: true, role: true } },
     },
   });
 }
@@ -287,3 +310,4 @@ export async function listTrips(filters: TripFilterInput = {}) {
     },
   });
 }
+

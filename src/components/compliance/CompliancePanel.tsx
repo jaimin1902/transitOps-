@@ -59,13 +59,13 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
         setDataList((prev) =>
           prev.map((d) => (d.id === driverId ? { ...d, status: DriverStatus.SUSPENDED, flags: [...d.flags.filter(f => f !== "DRIVER_SUSPENDED"), "DRIVER_SUSPENDED"] } : d))
         );
-        alert("Driver has been suspended successfully.");
+        alert("Driver has been suspended from operating dispatches.");
       } else {
         alert(res.error || "Failed to suspend driver.");
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred during suspension.");
+      alert("An unexpected error occurred during driver suspension.");
     } finally {
       setLoadingDriverId(null);
       setActionType(null);
@@ -93,94 +93,90 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <div className="space-y-8 animate-in fade-in duration-200 text-left">
       {/* KPI Dashboard Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Compliance Rate Card */}
-        <div className="p-6 bg-slate-900 border border-slate-850 rounded-2xl relative overflow-hidden group shadow-xl">
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/15 transition-all"></div>
+        <div className="p-6 bg-white border border-gray-200 rounded-card relative overflow-hidden group shadow-small">
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 text-xs font-bold uppercase tracking-wider">Compliance Rate</span>
-            <div className="w-8 h-8 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center">
+            <span className="text-gray-500 text-xs font-bold uppercase tracking-wider">Compliance Rate</span>
+            <div className="w-8 h-8 bg-primary-50 border border-primary-100 text-primary-500 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white">{stats.complianceRate.toFixed(1)}%</span>
-            <span className="text-xs text-slate-500 font-medium">compliant</span>
+            <span className="text-3xl font-extrabold text-gray-900">{stats.complianceRate.toFixed(1)}%</span>
+            <span className="text-xs text-gray-500 font-medium">compliant</span>
           </div>
-          <div className="w-full bg-slate-950 h-1.5 rounded-full mt-4 overflow-hidden">
+          <div className="w-full bg-gray-100 h-1.5 rounded-full mt-4 overflow-hidden">
             <div
-              className="bg-indigo-500 h-full rounded-full transition-all duration-500"
+              className="bg-primary-500 h-full rounded-full transition-all duration-500"
               style={{ width: `${stats.complianceRate}%` }}
             ></div>
           </div>
         </div>
 
         {/* Expired Licenses */}
-        <div className="p-6 bg-slate-900 border border-slate-850 rounded-2xl relative overflow-hidden group shadow-xl">
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/15 transition-all"></div>
+        <div className="p-6 bg-white border border-gray-200 rounded-card relative overflow-hidden group shadow-small">
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 text-xs font-bold uppercase tracking-wider">Expired Licenses</span>
-            <div className="w-8 h-8 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg flex items-center justify-center">
+            <span className="text-gray-500 text-xs font-bold uppercase tracking-wider">Expired Licenses</span>
+            <div className="w-8 h-8 bg-rose-50 border border-rose-100 text-rose-600 rounded-lg flex items-center justify-center">
               <ShieldAlert className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <span className={`text-3xl font-extrabold ${stats.expiredLicenses > 0 ? "text-rose-400" : "text-white"}`}>
+            <span className={`text-3xl font-extrabold ${stats.expiredLicenses > 0 ? "text-rose-600" : "text-gray-900"}`}>
               {stats.expiredLicenses}
             </span>
-            <span className="text-xs text-slate-500 block mt-1 font-medium">Immediate action required</span>
+            <span className="text-xs text-gray-400 block mt-1 font-medium">Immediate action required</span>
           </div>
         </div>
 
         {/* Expiring Soon */}
-        <div className="p-6 bg-slate-900 border border-slate-850 rounded-2xl relative overflow-hidden group shadow-xl">
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/15 transition-all"></div>
+        <div className="p-6 bg-white border border-gray-200 rounded-card relative overflow-hidden group shadow-small">
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 text-xs font-bold uppercase tracking-wider">Expiring in 30 Days</span>
-            <div className="w-8 h-8 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-lg flex items-center justify-center">
+            <span className="text-gray-500 text-xs font-bold uppercase tracking-wider">Expiring in 30 Days</span>
+            <div className="w-8 h-8 bg-amber-50 border border-amber-100 text-amber-600 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <span className={`text-3xl font-extrabold ${stats.expiringSoonLicenses > 0 ? "text-amber-400" : "text-white"}`}>
+            <span className={`text-3xl font-extrabold ${stats.expiringSoonLicenses > 0 ? "text-amber-600" : "text-gray-900"}`}>
               {stats.expiringSoonLicenses}
             </span>
-            <span className="text-xs text-slate-500 block mt-1 font-medium">Renewal warnings generated</span>
+            <span className="text-xs text-gray-400 block mt-1 font-medium">Renewal warnings generated</span>
           </div>
         </div>
 
         {/* Critical Safety Scores */}
-        <div className="p-6 bg-slate-900 border border-slate-850 rounded-2xl relative overflow-hidden group shadow-xl">
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/15 transition-all"></div>
+        <div className="p-6 bg-white border border-gray-200 rounded-card relative overflow-hidden group shadow-small">
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 text-xs font-bold uppercase tracking-wider">Critical Safety</span>
-            <div className="w-8 h-8 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg flex items-center justify-center">
+            <span className="text-gray-500 text-xs font-bold uppercase tracking-wider">Critical Safety</span>
+            <div className="w-8 h-8 bg-rose-50 border border-rose-100 text-rose-600 rounded-lg flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <span className={`text-3xl font-extrabold ${stats.criticalSafetyScores > 0 ? "text-rose-400" : "text-white"}`}>
+            <span className={`text-3xl font-extrabold ${stats.criticalSafetyScores > 0 ? "text-rose-600" : "text-gray-900"}`}>
               {stats.criticalSafetyScores}
             </span>
-            <span className="text-xs text-slate-500 block mt-1 font-medium">Safety scores under 70</span>
+            <span className="text-xs text-gray-400 block mt-1 font-medium">Safety scores under 70</span>
           </div>
         </div>
       </div>
 
       {/* Flagged Drivers List Card */}
       <div className="space-y-4">
-        <h3 className="text-xl font-bold text-white flex items-center gap-2">
-          <Compass className="text-indigo-400 w-5 h-5" />
+        <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <Compass className="text-primary-500 w-5 h-5" />
           Drivers Flagged for Non-Compliance
         </h3>
 
-        <div className="bg-slate-900 border border-slate-850 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white border border-gray-200 rounded-card overflow-hidden shadow-small">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="border-b border-slate-850 bg-slate-950/20 text-xs font-semibold text-slate-400 uppercase">
+                <tr className="border-b border-gray-200 bg-gray-50/50 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                   <th className="px-6 py-4">Driver Details</th>
                   <th className="px-6 py-4">License / Class</th>
                   <th className="px-6 py-4">Expiry Date</th>
@@ -189,7 +185,7 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-850 text-slate-300">
+              <tbody className="divide-y divide-gray-200 text-gray-700">
                 {dataList.length > 0 ? (
                   dataList.map((driver) => {
                     const isSuspended = driver.status === DriverStatus.SUSPENDED;
@@ -198,30 +194,30 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                     return (
                       <tr
                         key={driver.id}
-                        className={`hover:bg-slate-850/20 transition-colors ${
-                          driver.flags.includes("LICENSE_EXPIRED") ? "bg-rose-500/[0.01]" : ""
+                        className={`hover:bg-gray-50/30 transition-colors h-[52px] ${
+                          driver.flags.includes("LICENSE_EXPIRED") ? "bg-rose-50/10" : ""
                         }`}
                       >
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="font-semibold text-white">{driver.name}</span>
-                            <span className="text-xs text-slate-500 mt-0.5">{driver.contactNumber}</span>
+                            <span className="font-bold text-gray-900">{driver.name}</span>
+                            <span className="text-xs text-gray-400 mt-0.5">{driver.contactNumber}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="font-mono text-xs font-bold text-slate-200">{driver.licenseNumber}</span>
-                            <span className="text-[10px] text-slate-500 mt-0.5">{driver.licenseCategory}</span>
+                            <span className="font-mono text-xs font-bold text-gray-750">{driver.licenseNumber}</span>
+                            <span className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-wide font-medium">{driver.licenseCategory}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <span
                             className={
                               driver.flags.includes("LICENSE_EXPIRED")
-                                ? "text-rose-400 font-bold"
+                                ? "text-rose-600 font-bold"
                                 : driver.flags.includes("LICENSE_EXPIRING_SOON")
-                                ? "text-amber-400 font-semibold"
-                                : ""
+                                ? "text-amber-600 font-semibold"
+                                : "font-medium"
                             }
                           >
                             {new Date(driver.licenseExpiryDate).toLocaleDateString()}
@@ -230,7 +226,7 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                         <td className="px-6 py-4 font-semibold">
                           <span
                             className={
-                              driver.safetyScore < 70 ? "text-rose-400" : "text-amber-400"
+                              driver.safetyScore < 70 ? "text-rose-600" : "text-amber-600"
                             }
                           >
                             {driver.safetyScore} / 100
@@ -239,21 +235,21 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                         <td className="px-6 py-4">
                           <div className="flex flex-wrap gap-1.5">
                             {driver.flags.map((flag) => {
-                              let pillStyle = "bg-slate-800 text-slate-400 border-slate-700";
+                              let pillStyle = "bg-gray-100 text-gray-500 border-gray-250";
                               if (flag === "LICENSE_EXPIRED") {
-                                pillStyle = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+                                pillStyle = "bg-rose-50 text-rose-700 border-rose-200";
                               } else if (flag === "LICENSE_EXPIRING_SOON") {
-                                pillStyle = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                                pillStyle = "bg-amber-50 text-amber-700 border-amber-200";
                               } else if (flag === "CRITICAL_SAFETY_SCORE") {
-                                pillStyle = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+                                pillStyle = "bg-rose-50 text-rose-700 border-rose-200";
                               } else if (flag === "DRIVER_SUSPENDED") {
-                                pillStyle = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+                                pillStyle = "bg-rose-50 text-rose-700 border-rose-200";
                               }
 
                               return (
                                 <span
                                   key={flag}
-                                  className={`inline-block px-2 py-0.5 text-[9px] font-bold rounded-full border uppercase tracking-wider ${pillStyle}`}
+                                  className={`inline-block px-2.5 py-0.5 text-[9px] font-extrabold rounded-full border uppercase tracking-wider ${pillStyle}`}
                                 >
                                   {flag.replace("_", " ")}
                                 </span>
@@ -268,12 +264,12 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                               onClick={() => handleSendReminder(driver.id)}
                               disabled={loadingDriverId === driver.id && actionType === "remind"}
                               title="Log compliance reminder"
-                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-750 text-indigo-400 hover:text-indigo-300 disabled:opacity-40 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 border border-slate-750"
+                              className="h-8 px-3 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-primary-500 hover:border-primary-200 disabled:opacity-40 rounded-button text-xs font-bold transition-all flex items-center gap-1.5 shadow-small"
                             >
                               {loadingDriverId === driver.id && actionType === "remind" ? (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                               ) : (
-                                <Mail className="w-3.5 h-3.5" />
+                                <Mail className="w-3.5 h-3.5 text-gray-400" />
                               )}
                               Remind
                             </button>
@@ -283,12 +279,12 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                               onClick={() => handleSuspend(driver.id)}
                               disabled={isOnTrip || isSuspended || (loadingDriverId === driver.id && actionType === "suspend")}
                               title={isOnTrip ? "Cannot suspend driver on a trip" : isSuspended ? "Already suspended" : "Suspend driver"}
-                              className="px-3 py-1.5 bg-rose-950/20 hover:bg-rose-950/40 text-rose-400 hover:text-rose-300 disabled:opacity-30 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 border border-rose-900/30"
+                              className="h-8 px-3 bg-red-50 border border-red-100 text-red-700 hover:bg-red-100 disabled:opacity-30 rounded-button text-xs font-bold transition-all flex items-center gap-1.5 shadow-small"
                             >
                               {loadingDriverId === driver.id && actionType === "suspend" ? (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                               ) : (
-                                <UserX className="w-3.5 h-3.5" />
+                                <UserX className="w-3.5 h-3.5 text-red-500" />
                               )}
                               {isSuspended ? "Suspended" : "Suspend"}
                             </button>
@@ -299,7 +295,7 @@ export function CompliancePanel({ stats, flaggedDrivers }: ComplianceDashboardPr
                   })
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500 font-medium">
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-medium">
                       All systems green. No compliance flags detected!
                     </td>
                   </tr>

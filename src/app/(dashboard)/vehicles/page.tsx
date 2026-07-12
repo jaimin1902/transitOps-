@@ -28,14 +28,14 @@ export default async function VehiclesPage() {
       {/* Title section */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2.5 text-indigo-400 font-bold text-sm uppercase tracking-wider">
+          <div className="flex items-center gap-2.5 text-primary-500 font-bold text-xs uppercase tracking-wider">
             <Truck className="w-4 h-4" />
             Operations Workspace
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
             Vehicle Registry
           </h1>
-          <p className="text-slate-400 text-sm font-medium">
+          <p className="text-gray-500 text-sm">
             Monitor, inspect, and update registrations, loads, regions, and statuses for your active fleet.
           </p>
         </div>

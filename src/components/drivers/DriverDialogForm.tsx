@@ -59,7 +59,6 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
   // Populate form defaults when in edit mode
   useEffect(() => {
     if (driver) {
-      // Format expiry date to YYYY-MM-DD for date input
       const formattedDate = new Date(driver.licenseExpiryDate)
         .toISOString()
         .split("T")[0];
@@ -104,7 +103,6 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
     setIsSubmitting(true);
     setError(null);
 
-    // Convert empty string userId to null
     const payload = {
       ...data,
       userId: data.userId === "" ? null : data.userId,
@@ -136,33 +134,33 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
         onClick={() => {
           if (!isSubmitting) onClose();
         }}
       ></div>
 
       {/* Dialog container */}
-      <div className="relative w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-xl bg-white border border-gray-200 rounded-modal shadow-large overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-          <h2 className="text-xl font-bold text-white">
-            {isEditMode ? "Modify Driver Record" : "Register New Driver"}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+          <h2 className="text-lg font-bold text-gray-900">
+            {isEditMode ? "Modify driver record" : "Register new driver"}
           </h2>
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="text-slate-400 hover:text-slate-200 transition-colors disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 text-left">
           {error && (
-            <div className="flex items-start gap-3 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-200 text-sm rounded-xl">
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+            <div className="flex items-start gap-3 p-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-input">
+              <AlertCircle className="w-5 h-5 shrink-0 text-red-600 mt-0.5" />
               <p className="font-medium">{error}</p>
             </div>
           )}
@@ -170,18 +168,18 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
           <div className="grid grid-cols-2 gap-4">
             {/* Driver Name */}
             <div className="col-span-2">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                Driver Name
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                Driver Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 {...register("name")}
                 placeholder="David Driver"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
               />
               {errors.name && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.name.message}
                 </span>
               )}
@@ -189,18 +187,18 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* License Number */}
             <div className="col-span-1">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                License Number
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                License Number <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 {...register("licenseNumber")}
                 placeholder="DL-9988776655"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
               />
               {errors.licenseNumber && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.licenseNumber.message}
                 </span>
               )}
@@ -208,18 +206,18 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* License Category */}
             <div className="col-span-1">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                License Category
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                License Category <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 {...register("licenseCategory")}
                 placeholder="Heavy Commercial"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
               />
               {errors.licenseCategory && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.licenseCategory.message}
                 </span>
               )}
@@ -227,17 +225,17 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* Expiry Date */}
             <div className="col-span-1">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                License Expiry Date
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                License Expiry Date <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 {...register("licenseExpiryDate")}
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
               />
               {errors.licenseExpiryDate && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.licenseExpiryDate.message}
                 </span>
               )}
@@ -245,18 +243,18 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* Contact Number */}
             <div className="col-span-1">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                Contact Number
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                Contact Number <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 {...register("contactNumber")}
                 placeholder="+1-555-0199"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
               />
               {errors.contactNumber && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.contactNumber.message}
                 </span>
               )}
@@ -264,7 +262,7 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* Safety Score */}
             <div className="col-span-1">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
                 Safety Score (0-100)
               </label>
               <input
@@ -272,10 +270,10 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
                 {...register("safetyScore")}
                 placeholder="100"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
               />
               {errors.safetyScore && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.safetyScore.message}
                 </span>
               )}
@@ -283,13 +281,13 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* Status */}
             <div className="col-span-1">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
                 Status
               </label>
               <select
                 {...register("status")}
                 disabled={isSubmitting || driver?.status === DriverStatus.ON_TRIP}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50 select-arrow cursor-pointer"
               >
                 <option value={DriverStatus.AVAILABLE}>Available</option>
                 <option value={DriverStatus.OFF_DUTY}>Off Duty</option>
@@ -299,7 +297,7 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
                 )}
               </select>
               {errors.status && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
+                <span className="text-xs text-red-600 mt-1 block font-medium">
                   {errors.status.message}
                 </span>
               )}
@@ -307,16 +305,15 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
 
             {/* Linked User Account */}
             <div className="col-span-2">
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
                 Link User Login Account (Optional)
               </label>
               <select
                 {...register("userId")}
                 disabled={isSubmitting}
-                className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+                className="w-full h-[42px] px-3.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50 select-arrow cursor-pointer"
               >
                 <option value="">-- Do Not Link Account --</option>
-                {/* If editing, show current linked user if not in unlinkedUsers */}
                 {driver && driver.userId && (
                   <option value={driver.userId}>
                     Current: {driver.name} ({driver.userId})
@@ -332,19 +329,19 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 border border-slate-800 text-slate-300 hover:text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
+              className="h-10 px-5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-button text-sm font-semibold transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-indigo-600/10 flex items-center gap-2 disabled:opacity-50"
+              className="h-10 px-5 bg-primary-500 hover:bg-primary-600 text-white rounded-button text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50 shadow-small"
             >
               {isSubmitting ? (
                 <>
@@ -352,7 +349,7 @@ export function DriverDialogForm({ isOpen, onClose, unlinkedUsers, driver }: Dri
                   Saving...
                 </>
               ) : (
-                "Save Details"
+                "Save details"
               )}
             </button>
           </div>

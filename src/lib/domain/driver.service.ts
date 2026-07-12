@@ -247,3 +247,50 @@ export async function sendComplianceReminder(driverId: string) {
     },
   });
 }
+
+/**
+ * Update driver safety score — Safety Officer / Admin only (enforced in action)
+ */
+export async function updateSafetyScore(driverId: string, delta: number, reason: string, userId: string) {
+  const driver = await prisma.driver.findUnique({ where: { id: driverId } });
+  if (!driver) {
+    throw new DriverServiceError("Driver not found.");
+  }
+
+  const newScore = Math.max(0, Math.min(100, driver.safetyScore + delta));
+
+  const [updatedDriver] = await prisma.$transaction([
+    prisma.driver.update({
+      where: { id: driverId },
+      data: { safetyScore: newScore },
+    }),
+    prisma.auditLog.create({
+      data: {
+        userId,
+        action: delta >= 0 ? "INCREASE_SAFETY_SCORE" : "DECREASE_SAFETY_SCORE",
+        entityType: "DRIVER",
+        entityId: driverId,
+      },
+    }),
+  ]);
+
+  return { driver: updatedDriver, oldScore: driver.safetyScore, newScore, reason };
+}
+
+/**
+ * Full driver detail with complete trip history — used by /drivers/[id]
+ */
+export async function getDriverDetail(id: string) {
+  return prisma.driver.findUnique({
+    where: { id },
+    include: {
+      user: { select: { email: true, name: true } },
+      trips: {
+        orderBy: { createdAt: "desc" },
+        include: {
+          vehicle: { select: { registrationNumber: true, name: true } },
+        },
+      },
+    },
+  });
+}

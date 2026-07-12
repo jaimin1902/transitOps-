@@ -7,6 +7,7 @@ import {
   updateDriver,
   suspendDriver,
   sendComplianceReminder,
+  updateSafetyScore,
   DriverServiceError,
 } from "@/lib/domain/driver.service";
 import { DriverInput } from "@/lib/validations/driver";
@@ -92,6 +93,31 @@ export async function sendComplianceReminderAction(driverId: string) {
       return { success: false, error: error.message };
     }
     const message = error instanceof Error ? error.message : "Failed to trigger compliance reminder alert.";
+    return { success: false, error: message };
+  }
+}
+
+export async function updateSafetyScoreAction(driverId: string, delta: number, reason: string) {
+  const session = await auth();
+
+  try {
+    // Safety Officer and Admin only
+    assertPermission(session?.user?.role, "MANAGE_DRIVERS");
+
+    const userId = session?.user?.id;
+    if (!userId) return { success: false, error: "Unauthenticated." };
+
+    const result = await updateSafetyScore(driverId, delta, reason, userId);
+    revalidatePath("/drivers");
+    revalidatePath(`/drivers/${driverId}`);
+    revalidatePath("/compliance");
+    return { success: true, data: result };
+  } catch (error: unknown) {
+    console.error(`Action error updating safety score for driver ${driverId}:`, error);
+    if (error instanceof DriverServiceError) {
+      return { success: false, error: error.message };
+    }
+    const message = error instanceof Error ? error.message : "Failed to update safety score.";
     return { success: false, error: message };
   }
 }

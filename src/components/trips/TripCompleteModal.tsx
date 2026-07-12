@@ -41,14 +41,13 @@ export function TripCompleteModal({ isOpen, onClose, trip }: TripCompleteModalPr
     },
   });
 
-  // Pre-fill endOdometer with starting odometer + plannedDistance to help user
   useEffect(() => {
     if (trip) {
       const estimatedEndOdom = startOdom + Number(trip.plannedDistance);
       reset({
         endOdometer: estimatedEndOdom,
         actualDistance: Number(trip.plannedDistance),
-        fuelConsumed: Math.round(Number(trip.plannedDistance) * 0.15 * 10) / 10, // Estimate fuel consumption (15L per 100km)
+        fuelConsumed: Math.round(Number(trip.plannedDistance) * 0.15 * 10) / 10,
       });
     }
     setError(null);
@@ -60,7 +59,6 @@ export function TripCompleteModal({ isOpen, onClose, trip }: TripCompleteModalPr
     setIsSubmitting(true);
     setError(null);
 
-    // Business check
     if (data.endOdometer <= startOdom) {
       setError(`Ending odometer must exceed start odometer (${startOdom} km).`);
       setIsSubmitting(false);
@@ -85,153 +83,104 @@ export function TripCompleteModal({ isOpen, onClose, trip }: TripCompleteModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
-        onClick={() => {
-          if (!isSubmitting) onClose();
-        }}
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+        onClick={() => { if (!isSubmitting) onClose(); }}
       ></div>
 
-      {/* Dialog container */}
-      <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-white border border-gray-200 rounded-modal shadow-large overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/50">
           <div>
-            <h2 className="text-lg font-bold text-white">Complete Dispatch Trip</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Finalize logs and compute ROI metrics</p>
+            <h2 className="text-lg font-bold text-gray-900">Complete Dispatch Trip</h2>
+            <p className="text-[10px] text-gray-400 mt-0.5">Finalize logs and compute ROI metrics</p>
           </div>
-          <button
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="text-slate-400 hover:text-slate-200 transition-colors disabled:opacity-50"
-          >
+          <button onClick={onClose} disabled={isSubmitting} className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 text-left">
           {error && (
-            <div className="flex items-start gap-3 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-200 text-sm rounded-xl">
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+            <div className="flex items-start gap-3 p-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-input">
+              <AlertCircle className="w-5 h-5 shrink-0 text-red-600 mt-0.5" />
               <p className="font-medium">{error}</p>
             </div>
           )}
 
           <div className="space-y-4">
             {/* Quick Details Card */}
-            <div className="p-4 bg-slate-950/50 border border-slate-850 rounded-xl space-y-1.5">
-              <div className="flex justify-between text-xs text-slate-400">
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-2">
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>Vehicle Assigned:</span>
-                <span className="font-semibold text-slate-200">{trip.vehicle.name}</span>
+                <span className="font-semibold text-gray-900">{trip.vehicle.name}</span>
               </div>
-              <div className="flex justify-between text-xs text-slate-400">
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>Start Odometer:</span>
-                <span className="font-semibold text-slate-200">{startOdom.toLocaleString()} km</span>
+                <span className="font-semibold text-gray-900">{startOdom.toLocaleString()} km</span>
               </div>
-              <div className="flex justify-between text-xs text-slate-400">
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>Planned Distance:</span>
-                <span className="font-semibold text-slate-200">{trip.plannedDistance.toLocaleString()} km</span>
+                <span className="font-semibold text-gray-900">{trip.plannedDistance.toLocaleString()} km</span>
               </div>
             </div>
 
             {/* Input End Odometer */}
             <div>
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                Odometer Reading at Completion (km)
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                Odometer at Completion (km) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
-                  <Compass className="w-5 h-5" />
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <Compass className="w-4 h-4" />
                 </span>
-                <input
-                  type="number"
-                  step="any"
-                  {...register("endOdometer")}
-                  disabled={isSubmitting}
-                  className="w-full pl-11 pr-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
-                />
+                <input type="number" step="any" {...register("endOdometer")} disabled={isSubmitting}
+                  className="w-full h-[42px] pl-10 pr-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50" />
               </div>
-              {errors.endOdometer && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
-                  {errors.endOdometer.message}
-                </span>
-              )}
+              {errors.endOdometer && <span className="text-xs text-red-600 mt-1 block font-medium">{errors.endOdometer.message}</span>}
             </div>
 
             {/* Input Actual Distance */}
             <div>
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
-                Actual Distance Traveled (km)
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                Actual Distance Traveled (km) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
-                  <Route className="w-5 h-5" />
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <Route className="w-4 h-4" />
                 </span>
-                <input
-                  type="number"
-                  step="any"
-                  {...register("actualDistance")}
-                  disabled={isSubmitting}
-                  className="w-full pl-11 pr-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
-                />
+                <input type="number" step="any" {...register("actualDistance")} disabled={isSubmitting}
+                  className="w-full h-[42px] pl-10 pr-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50" />
               </div>
-              {errors.actualDistance && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
-                  {errors.actualDistance.message}
-                </span>
-              )}
+              {errors.actualDistance && <span className="text-xs text-red-600 mt-1 block font-medium">{errors.actualDistance.message}</span>}
             </div>
 
             {/* Input Fuel Consumed */}
             <div>
-              <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
+              <label className="block text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
                 Fuel Consumed (Liters)
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
-                  <Fuel className="w-5 h-5" />
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <Fuel className="w-4 h-4" />
                 </span>
-                <input
-                  type="number"
-                  step="any"
-                  {...register("fuelConsumed")}
-                  disabled={isSubmitting}
-                  className="w-full pl-11 pr-4 py-2.5 bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all disabled:opacity-50"
-                />
+                <input type="number" step="any" {...register("fuelConsumed")} disabled={isSubmitting}
+                  className="w-full h-[42px] pl-10 pr-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-input focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50" />
               </div>
-              {errors.fuelConsumed && (
-                <span className="text-xs text-rose-400 mt-1 block font-medium">
-                  {errors.fuelConsumed.message}
-                </span>
-              )}
+              {errors.fuelConsumed && <span className="text-xs text-red-600 mt-1 block font-medium">{errors.fuelConsumed.message}</span>}
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="px-5 py-2.5 border border-slate-800 text-slate-300 hover:text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-            >
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+            <button type="button" onClick={onClose} disabled={isSubmitting}
+              className="h-10 px-5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-button text-sm font-semibold transition-colors disabled:opacity-50">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-emerald-600/10 flex items-center gap-2 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Confirm Completion"
-              )}
+            <button type="submit" disabled={isSubmitting}
+              className="h-10 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-button text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50 shadow-small">
+              {isSubmitting ? (<><Loader2 className="w-4 h-4 animate-spin" />Completing...</>) : ("Confirm Complete")}
             </button>
           </div>
         </form>

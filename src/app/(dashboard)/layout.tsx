@@ -10,11 +10,11 @@ import {
   Route,
   Wrench,
   DollarSign,
-  BarChart3,
   ShieldCheck,
   User as UserIcon,
 } from "lucide-react";
 import { LogoutButton } from "@/components/shared/LogoutButton";
+import { GlobalSearchBar } from "@/components/shared/GlobalSearchBar";
 
 export default async function DashboardLayout({
   children,
@@ -63,7 +63,7 @@ export default async function DashboardLayout({
     },
     {
       name: "Fuel & Expenses",
-      href: "/fuel-expenses",
+      href: "/expenses", // Aligned with the expenses router path
       icon: DollarSign,
       show: hasPermission(role, "VIEW_FUEL_EXPENSES"),
     },
@@ -73,42 +73,36 @@ export default async function DashboardLayout({
       icon: ShieldCheck,
       show: hasPermission(role, "VIEW_COMPLIANCE"),
     },
-    {
-      name: "Reports & Analytics",
-      href: "/reports",
-      icon: BarChart3,
-      show: hasPermission(role, "VIEW_REPORTS"),
-    },
   ];
 
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden">
+    <div className="flex h-screen bg-[#F5F7FA] text-gray-900 overflow-hidden font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
+      <aside className="w-[260px] bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
         <div className="flex flex-col overflow-y-auto">
           {/* Logo */}
-          <div className="h-16 flex items-center px-6 border-b border-slate-850 gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg">
+          <div className="h-16 flex items-center px-6 border-b border-gray-200 gap-2 shrink-0 bg-white">
+            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center font-bold text-white shadow-small">
               T
             </div>
-            <span className="font-extrabold text-xl tracking-tight text-white">TransitOps</span>
+            <span className="font-extrabold text-xl tracking-tight text-gray-900">TransitOps</span>
           </div>
 
           {/* User Profile Summary */}
-          <div className="p-4 mx-3 my-4 bg-slate-950/40 border border-slate-800/60 rounded-xl flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center">
+          <div className="p-4 mx-4 my-4 bg-gray-50 border border-gray-200 rounded-xl flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center border border-primary-100 shadow-small shrink-0">
               <UserIcon className="w-5 h-5" />
             </div>
             <div className="overflow-hidden">
-              <h4 className="font-semibold text-sm truncate text-slate-200">{session.user.name}</h4>
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+              <h4 className="font-bold text-sm truncate text-gray-900">{session.user.name}</h4>
+              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
                 {role.replace("_", " ")}
               </span>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 px-3 space-y-1">
+          <nav className="flex-1 px-4 space-y-1">
             {navItems
               .filter((item) => item.show)
               .map((item) => {
@@ -117,9 +111,9 @@ export default async function DashboardLayout({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-100 hover:bg-slate-850 rounded-xl transition-all font-medium text-sm group"
+                    className="flex items-center gap-3 px-4 h-11 text-gray-600 hover:text-primary-500 hover:bg-primary-50 rounded-[8px] transition-all font-semibold text-sm group"
                   >
-                    <Icon className="w-5 h-5 group-hover:scale-105 transition-transform" />
+                    <Icon className="w-[20px] h-[20px] text-gray-400 group-hover:text-primary-500 transition-colors" />
                     {item.name}
                   </Link>
                 );
@@ -128,18 +122,18 @@ export default async function DashboardLayout({
         </div>
 
         {/* Logout Button Footer */}
-        <div className="p-3 border-t border-slate-850">
+        <div className="p-4 border-t border-gray-200 bg-white">
           <LogoutButton />
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-y-auto bg-slate-950 relative">
+      <main className="flex-1 flex flex-col overflow-y-auto bg-[#F5F7FA] relative">
         {/* Top Header */}
-        <header className="h-16 bg-slate-900/40 backdrop-blur-md border-b border-slate-850 px-8 flex items-center justify-between shrink-0">
-          <h2 className="text-lg font-bold text-slate-200">Management Panel</h2>
-          <div className="flex items-center gap-4 text-xs font-semibold px-3 py-1.5 bg-slate-850 rounded-full border border-slate-800 text-slate-400">
-            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+        <header className="h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between shrink-0">
+          <GlobalSearchBar />
+          <div className="flex items-center gap-4 text-xs font-semibold px-3 py-1.5 bg-green-50 rounded-full border border-green-200 text-green-800 shadow-small">
+            <span className="w-2.5 h-2.5 bg-green-600 rounded-full animate-pulse"></span>
             System Live
           </div>
         </header>
